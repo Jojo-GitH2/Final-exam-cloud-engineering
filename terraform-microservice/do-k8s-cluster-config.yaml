@@ -1,0 +1,30 @@
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURKekNDQWcrZ0F3SUJBZ0lDQm5Vd0RRWUpLb1pJaHZjTkFRRUxCUUF3TXpFVk1CTUdBMVVFQ2hNTVJHbG4KYVhSaGJFOWpaV0Z1TVJvd0dBWURWUVFERXhGck9ITmhZWE1nUTJ4MWMzUmxjaUJEUVRBZUZ3MHlNekF6TVRjeQpNakUyTlRSYUZ3MDBNekF6TVRjeU1qRTJOVFJhTURNeEZUQVRCZ05WQkFvVERFUnBaMmwwWVd4UFkyVmhiakVhCk1CZ0dBMVVFQXhNUmF6aHpZV0Z6SUVOc2RYTjBaWElnUTBFd2dnRWlNQTBHQ1NxR1NJYjNEUUVCQVFVQUE0SUIKRHdBd2dnRUtBb0lCQVFDMTFxVHh1MjhlVXpVK2lxZWVxYlIrRWczYlF5NmF4c3B5amZkanhHRTlxODkzSWN1Rgpqb0hKU2w4TVB0aTVySUUrNzFPd0RmRWxJQ3h3bWpCTUhUWUtLSmxZc0phOUUvTEVqa0p6V1ZsUlY1emRtcGZ5ClJWSDM1bXlwN1RGQVBWMXIzSnpHVDE5RHcvdG8wWTNqdFNDRnByQW1yT2gzWlZQSER3ZlNWa0NlTGNXWmVCNTgKL3hibWxDNDBZSzcrUFMrd3VJMXhBdWlFMTRSenIzcHZkMXRlS1JhN0VVNnovV2ZBQ2Ezc3Z1d2F6eDlNRFZyaQp1Sjl2RWdvTktLRkxITEZUNjNsdzJPNUoxQVdYK21IVGM3dkhZQ2R0czZKdUZlNlJGRzc0ZzVvSTZaWXpKcDA5CmpoWHNyRXVOSWt0QTk0V2k3Tk9SejdJUy84R0g5SXk0UnBVekFnTUJBQUdqUlRCRE1BNEdBMVVkRHdFQi93UUUKQXdJQmhqQVNCZ05WSFJNQkFmOEVDREFHQVFIL0FnRUFNQjBHQTFVZERnUVdCQlFKa2VOK1ZCc0tBKzcycnJ5dAptc2cvZVYzYkpUQU5CZ2txaGtpRzl3MEJBUXNGQUFPQ0FRRUFaZDNYbkxGVmtvVUladnltaW0rMGlQOFhxclp1Ci9JVmswZE90UHJYU3ZkUGVUZkNNYVV1aEo4VWRnc01UaU9BRUdudzlhVUx3L3pucDY0UFRNcFBrRWtNYWN2dkoKMEdTK24vV2w0cUNYMGd6cmw4WWJXWHhGNFlZVVFEblpkb3FOQUlLYWFOeEJwSVdPMVphWTAycElzUkxxMFhEVwpLbTVsVTRjc2JLRU1jN0tOWDY3dTZIRWlWUHN0MDBpMktzMnRqeWtVMFp3bVB1Y3NqcmRueTRBbGlyWEZuUHYwCnlQajBJbGNnL0twNHFScDFqYUtxUHpRQ1ZQeXFobjRtb1NXYU5JRFJoZkRadkVrd083cnRTUURIMzM2dHFEaWsKTFJETDUxSFZSeEs2Qk1nQ0lUc1hYd0xJUnJDZ21sa3VVK0tzb2ZBaUh4dHlnS2txWEF5VGZ1U1dqQT09Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K
+    server: https://4f61fe3d-a1c6-4c43-a7d8-e0a52a27b038.k8s.ondigitalocean.com
+  name: do-lon1-altschool-kubernetes-cluster
+contexts:
+- context:
+    cluster: do-lon1-altschool-kubernetes-cluster
+    user: do-lon1-altschool-kubernetes-cluster-admin
+  name: do-lon1-altschool-kubernetes-cluster
+current-context: do-lon1-altschool-kubernetes-cluster
+kind: Config
+preferences: {}
+users:
+- name: do-lon1-altschool-kubernetes-cluster-admin
+  user:
+    exec:
+      apiVersion: client.authentication.k8s.io/v1beta1
+      args:
+      - kubernetes
+      - cluster
+      - kubeconfig
+      - exec-credential
+      - --version=v1beta1
+      - --context=default
+      - 4f61fe3d-a1c6-4c43-a7d8-e0a52a27b038
+      command: doctl
+      env: null
+      provideClusterInfo: false
