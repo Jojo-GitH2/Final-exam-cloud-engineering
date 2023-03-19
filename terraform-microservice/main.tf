@@ -15,7 +15,7 @@ resource "digitalocean_kubernetes_cluster" "kubernetes_cluster" {
     size       = node_pool.value["size"]
     }
   }
-}
+
 
 //Export this cluster's attributes
 
