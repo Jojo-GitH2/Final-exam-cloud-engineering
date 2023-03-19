@@ -10,9 +10,9 @@ resource "digitalocean_kubernetes_cluster" "kubernetes_cluster" {
   tags   = var.tags
 
   node_pool {
-    name = var.pools
-    node_count = var.pools.count
-    size       = var.pools.size
+    name = var.pools.0.name
+    node_count = var.pools.0.count
+    size       = var.pools.0.size
     }
   }
 
