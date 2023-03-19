@@ -6,7 +6,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  deploy:
+  deploy-sock-shop:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
@@ -24,7 +24,115 @@ jobs:
       with:
         token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 
-    - name: Log in to DigitalOcean Container Registry
-      run: doctl registry login --expiry-seconds 600 
+    # - name: Log in to DigitalOcean Container Registry
+    #   run: doctl registry login --expiry-seconds 600 
 
-    
+    - name: HashiCorp - Setup Terraform
+      uses: hashicorp/setup-terraform@v2.0.3
+      with:
+        terraform_wrapper: true
+
+    # - name: Run Script to perform provision of clusters
+    #   run: 
+    - name: Terraform fmt
+      id: fmt
+      run: terraform fmt --check
+      continue-on-error: true
+      shell: bash
+
+    - name: Terraform Init
+      id: init
+      run: terraform init
+      env: 
+        TF_VAR_token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+      working-directory: $HOME/terraform-microservice
+      shell: bash
+
+    - name: Terraform Validate
+      id: validate
+      run: terraform validate -no-color
+      env: 
+        TF_VAR_token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+      working-directory: $HOME/terraform-microservice
+      shell: bash
+
+    - name: Terraform Plan
+      id: plan
+      run: terraform plan -no-color
+      env: 
+        TF_VAR_token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+      working-directory: $HOME/terraform-microservice
+
+    - uses: actions/github-script@v6
+      if: github.event_name == 'pull_request'
+      env:
+        PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          // 1. Retrieve existing bot comments for the PR
+          const { data: comments } = await github.rest.issues.listComments({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: context.issue.number,
+          })
+          const botComment = comments.find(comment => {
+            return comment.user.type === 'Bot' && comment.body.includes('Terraform Format and Style')
+          })
+
+          // 2. Prepare format of the comment
+          const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+          #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
+          #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
+          <details><summary>Validation Output</summary>
+
+          \`\`\`\n
+          ${{ steps.validate.outputs.stdout }}
+          \`\`\`
+
+          </details>
+
+          #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
+
+          <details><summary>Show Plan</summary>
+
+          \`\`\`\n
+          ${process.env.PLAN}
+          \`\`\`
+
+          </details>
+
+          *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ env.tf_actions_working_dir }}\`, Workflow: \`${{ github.workflow }}\`*`;
+
+          // 3. If we have a comment, update it, otherwise create a new one
+          if (botComment) {
+          github.rest.issues.updateComment({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            comment_id: botComment.id,
+            body: output
+          )
+          } else {
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: output
+          })
+          }
+        working-directory: $HOME/terraform-microservice
+        shell: bash
+
+    - name: Terraform Apply
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      id: apply
+      run: terraform apply -auto-approve -no-color -input=false
+      env:
+        TF_VAR_token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+      working-directory: $HOME/terraform-microservice
+      shell: bash
+    - name: Run script to deploy to Kubernetes cluster
+      run: bash ./do-k8s-config/deploy.sh
+      working-directory: $HOME/terraform-microservice
+
+
