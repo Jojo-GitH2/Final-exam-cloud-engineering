@@ -1,6 +1,6 @@
 variable "do_token" {
   description = "Your Digital Ocean API Personal Access Token. (required)"
-  default = $TF_VAR_token
+  # default = $TF_VAR_token
 }
 
 variable "k8s_version" {
