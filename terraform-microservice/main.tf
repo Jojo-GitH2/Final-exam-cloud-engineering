@@ -9,12 +9,11 @@ resource "digitalocean_kubernetes_cluster" "kubernetes_cluster" {
   region = var.region
   tags   = var.tags
 
-  dynamic "node_pool" {
-    for_each = var.pools
-    content {
-      name       = node_pool.value["name"]
-      node_count = node_pool.value["count"]
-      size       = node_pool.value["size"]
+  node_pool {
+    name = var.pools
+    name       = node_pool.value["name"]
+    node_count = node_pool.value["count"]
+    size       = node_pool.value["size"]
     }
   }
 }
